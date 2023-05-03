@@ -1,23 +1,32 @@
-import logo from './logo.svg';
-import './App.css';
+import React from 'react'
+import { useDispatch, useSelector } from 'react-redux';
+import SimpleTable from './components/TableData';
+import { fetchUsersAsync } from './redux/slices/soccerAction';
+import Header from './components/Header';
+import LoginForm from './components/Login';
+import { Route, Routes, useNavigate } from 'react-router-dom';
 
 function App() {
+  const dispatch=useDispatch()
+  React.useEffect(()=>{
+     dispatch(fetchUsersAsync())
+  },[])
+  const navigate=useNavigate()
+
+  React.useEffect(()=>{
+    if(localStorage.getItem("user")){
+      navigate('/table')
+    }else{
+      navigate('/')
+    }
+  },[])
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <Header/>
+      <Routes>
+       {!!localStorage.getItem("user") && <Route path="/table" element={<SimpleTable/>} />}
+       {!localStorage.getItem("user") && <Route path="/" element={<LoginForm/> }/>}
+       </Routes>
     </div>
   );
 }
